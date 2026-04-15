@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # <--- THIS IS THE KEY CHANGE
 
     steps:
       - name: Checkout Code
@@ -25,3 +25,8 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/node-k8s-app1:latest
+
+      - name: Update Kubernetes Cluster
+        run: |
+          kubectl set image deployment/node-deployment node-container=${{ secrets.DOCKER_USERNAME }}/node-k8s-app1:latest
+          kubectl rollout status deployment/node-deployment
